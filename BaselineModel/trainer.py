@@ -1,4 +1,4 @@
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, save_model
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D, Dropout
 import joblib
 from sklearn.metrics import accuracy_score, precision_score, recall_score
@@ -10,7 +10,7 @@ import numpy as np
 class Trainer(object):
     def __init__(self, X, y):
         self.X_train, self.X_val, self.y_train, self.y_val = train_test_split(X, y, test_size = 0.2, random_state = 0)
-
+        self.model = self.set_structure()
 
     def set_experiment_name(self):
         pass
@@ -45,7 +45,6 @@ class Trainer(object):
 
     def run(self, epochs=1, batch_size=32):
         """Fit the model"""
-        self.model = self.set_structure()
         self.model.fit(self.X_train,
                        self.y_train,
                        validation_data=(self.X_val, self.y_val),
@@ -73,9 +72,9 @@ class Trainer(object):
     def upload_model_to_gcp(self):
         pass
 
-    def save_model(self):
+    def save_down_model(self):
         """Save the model into a .joblib format"""
-        joblib.dump(self.model, 'model.joblib')
+        self.model.save('model.h5')
         print("Saving down model locally.")
 
 
@@ -94,4 +93,4 @@ if __name__ == "__main__":
     trainer.run()
     eval = trainer.evaluate(X_test, y_test)
     print(f"precision: {eval['precision']}")
-    #trainer.save_model()
+    trainer.save_down_model()
