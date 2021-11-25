@@ -21,7 +21,6 @@ class Trainer(object):
         self.y_val = self.label_binarizer.fit_transform(self.y_val)
 
 
-
         model=Sequential()
         model.add(Conv2D(128,kernel_size=(5,5),
                         strides=1,padding='same',activation='relu',input_shape=(100,100,1)))
@@ -37,6 +36,7 @@ class Trainer(object):
         model.add(Dense(units=512,activation='relu'))
         model.add(Dropout(rate=0.25))
         model.add(Dense(units=36,activation='softmax'))
+
 
         model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
 
@@ -74,7 +74,7 @@ class Trainer(object):
 
     def save_down_model(self):
         """Save the model into a .joblib format"""
-        self.model.save('model.h5')
+        self.model.save('baseline.model.h5')
         print("Saving down model locally.")
 
 
