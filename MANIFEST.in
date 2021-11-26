@@ -1,1 +1,4 @@
+graft flykr
+global-exclude *.py[cod] __pycache__ *.so *.ipynb
+recursive-exclude  flykr/jupy *
 include requirements.txt
