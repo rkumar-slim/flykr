@@ -9,6 +9,7 @@ numpy
 pandas
 scikit-learn
 tensorflow
+Pillow
 
 # tests/linter
 black
@@ -32,5 +33,4 @@ six>=1.14
 joblib
 memoized-property
 termcolor
-PIL
 pydantic
