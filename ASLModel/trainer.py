@@ -7,7 +7,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras import layers, models, optimizers
 from tensorflow.keras.callbacks import EarlyStopping
-
+import joblib
 
 class Trainer(object):
 
@@ -68,6 +68,7 @@ class Trainer(object):
 
     def save_down_model(self):
         self.model.save('asl_model.h5')
+        joblib.dump(self.label_binarizer, 'asl_labelbinarizer.h5')
         print("Saved down asl model locally.")
 
 
@@ -84,7 +85,7 @@ if __name__ == "__main__":
                                                         test_size=0.1)
     # Train and save model, locally and
     trainer = Trainer(X_train, y_train)
-    trainer.run()
+    trainer.run(epochs = 1)
     #eval = trainer.evaluate(X_test, y_test)
     #print(f"precision: {eval['precision']}")
     trainer.save_down_model()
