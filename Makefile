@@ -60,4 +60,7 @@ pypi:
 #      API MAGIC :)
 # ----------------------------------
 run_api:
-	uvicorn api.app:app --reload  # load web server with code autoreload
+	uvicorn api.api:app --reload  # load web server with code autoreload
+
+streamlit:
+	-@streamlit run app.py
