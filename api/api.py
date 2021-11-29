@@ -5,9 +5,8 @@ import numpy as np
 import json
 import  tensorflow as tf
 from tensorflow.keras.models import load_model
-import joblib
 from flykr.utils import model_label_prediction
-from skimage import color
+
 
 app = FastAPI()
 
