@@ -6,6 +6,8 @@ import json
 import  tensorflow as tf
 from tensorflow.keras.models import load_model
 import joblib
+from flykr.utils import model_label_prediction
+from skimage import color
 
 app = FastAPI()
 
@@ -18,7 +20,7 @@ app.add_middleware(
 )
 
 model = load_model('asl_model.h5')
-label_binarizer = joblib.load("asl_labelbinarizer.h5")
+labels = np.load('asl_class_names.npy')
 
 
 @app.get("/")
@@ -39,13 +41,14 @@ async def predict(image: Item):
     response = np.array(json.loads(image.image_reshape))
     response_reshape = response.reshape(
         (image.height, image.width, image.color))
+    response_reshape = response_reshape[:, :, :3]
+
     # Resize the image :warning: WITHOUT PAD
-    response_reshape = tf.image.resize(response_reshape, [100, 100])
-    response_reshape = np.array(response_reshape[:, :, :3]).reshape(
-        -1, 100, 100, 3)
+    response_reshape = tf.image.resize(response_reshape, (128, 128))
+
     print(response_reshape.shape)
     # Load the model
-    prediction = (model.predict(response_reshape) > 0.5) * 1.0
-    letter = label_binarizer.inverse_transform(prediction)[0]
+    letter = model_label_prediction(model, labels, response_reshape)
 
-    return {"response": letter}
+
+    return {"response": str(letter)}
