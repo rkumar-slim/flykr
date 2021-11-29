@@ -39,16 +39,16 @@ class Item(BaseModel):
 async def predict(image: Item):
     # Get the image from the upload
     response = np.array(json.loads(image.image_reshape))
-    response_reshape_1 = response.reshape(
+    response_reshape = response.reshape(
         (image.height, image.width, image.color))
-    response_reshape_2 = response_reshape_1[:, :, :3]
+    response_reshape = response_reshape[:, :, :3]
+
     # Resize the image :warning: WITHOUT PAD
-    response_reshape = tf.image.resize(response_reshape_2, (128, 128))
-    # response_reshape = np.array(response_reshape).reshape(
-    #     -1, 128, 128, 3)
+    response_reshape = tf.image.resize(response_reshape, (128, 128))
+
     print(response_reshape.shape)
     # Load the model
     letter = model_label_prediction(model, labels, response_reshape)
-    #letter = response_reshape_1[1, :]
+
 
     return {"response": str(letter)}
