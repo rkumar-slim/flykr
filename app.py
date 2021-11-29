@@ -25,7 +25,7 @@ if uploadFile is not None:
     X = X.tolist()
     X_json = json.dumps(X)
     # Call the POST
-    url = "http://127.0.0.1:8000/predict/"
+    url = "https://sign-lang-im-n7noas4ljq-ew.a.run.app/predict"
     data = json.dumps({
         "image_reshape": X_json,
         "height": img.shape[0],
@@ -33,7 +33,9 @@ if uploadFile is not None:
         "color": img.shape[2]
     })
     headers = {'Content-type': 'application/json'}
-    response = requests.post(url, data, headers=headers).json()
+
+    response = requests.post(url, data, headers=headers)
+    response = response.json()
     # e.g bruschetta
     st.write(f"I think the this sign is: {response['response']}")
 
