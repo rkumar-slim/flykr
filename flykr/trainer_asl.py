@@ -48,20 +48,16 @@ class Trainer(object):
         # Label names created during the loading of train ds. This is saved down along with the final model.
         self.class_names = self.train_dataset.class_names
 
-        self.model = self.set_structure()
+        self.model = None
+        self.transfer_model = VGG16(weights="imagenet",
+                                    include_top=False,
+                                    input_shape=(self.image_size_x,
+                                                 self.image_size_y, 3))
 
-    def set_structure(self):
-
-
-        transfer_model = VGG16(weights="imagenet",
-                               include_top=False,
-                               input_shape=(self.image_size_x,
-                                            self.image_size_y, 3))
-
-        transfer_model.trainable = False
+    def set_structure(self, trainable = False):
 
         model = models.Sequential([
-            transfer_model,
+            self.transfer_model,
             layers.Flatten(),
             layers.Dense(500, activation='relu'),
             layers.Dense(250, activation='relu'),
@@ -69,14 +65,19 @@ class Trainer(object):
             layers.Dense(len(self.class_names), activation='softmax')
         ])
 
+        return model
 
-        opt = optimizers.Adam(learning_rate=1e-4)
-        model.compile(loss='categorical_crossentropy',
+    def set_transfer(self, trainable = False):
+        self.transfer_model.trainable = trainable
+
+
+    def compile_model(self, learning_rate=0.001):
+
+        opt = optimizers.Adam(learning_rate=learning_rate)
+        self.model.compile(loss='categorical_crossentropy',
                     optimizer=opt,
                     metrics=['accuracy'])
 
-
-        return model
 
     def run(self, epochs = 50):
         self.train_dataset = self.train_dataset.map(scale)
@@ -110,6 +111,12 @@ if __name__ == "__main__":
 
     # Train and save model, locally and
     trainer = Trainer(image_size_x, image_size_y, data_filepath)
-    trainer.run(epochs = 1)
+    trainer.model = trainer.set_structure()
+    trainer.set_transfer()
+    trainer.compile_model()
+    trainer.run(epochs=1)
+    trainer.set_transfer(trainable=True)
+    trainer.compile_model(learning_rate=1e-5)
+    trainer.run(epochs=1)
 
     trainer.save_down_model()
